@@ -1,0 +1,4 @@
+const APPWRITE_ENDPOINT = import.meta.env.VITE_APPWRITE_ENDPOINT;
+const PROJECT_ID = import.meta.env.VITE_PROJECT_ID;
+
+export { APPWRITE_ENDPOINT, PROJECT_ID };

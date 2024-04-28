@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import authService from '../services/auth.service';
+import { useDispatch } from 'react-redux';
+import { logout } from '../features/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
+	const { user } = useSelector((states) => states.user);
+	const dispatch = useDispatch();
+	const handleLogin = () => {};
 
-	const handleLogin = () => {
-		// Logic for handling login
-		setIsLoggedIn(true);
-	};
-
-	const handleLogout = () => {
-		// Logic for handling logout
-		setIsLoggedIn(false);
+	const navigate = useNavigate('/');
+	
+	const handleLogout = async () => {
+		const response = await authService.logOut();
+		dispatch(logout());
+		navigate('/login');
 	};
 
 	return (
@@ -25,15 +31,19 @@ const Navbar = () => {
 							Home
 						</a>
 					</li>
-					{isLoggedIn ? (
+					{user ? (
 						<li className="mr-4 mb-2 md:mb-0">
 							<button onClick={handleLogout}>Logout</button>
 						</li>
 					) : (
-						<li className="mr-4 mb-2 md:mb-0">
-							<button onClick={handleLogin}>Login</button>
-						</li>
+						<Link to={'/login'}>
+							<li className="mr-4 mb-2 md:mb-0">
+								<button>Login</button>
+							</li>
+						</Link>
 					)}
+
+					<li className=" mb-2 md:mb-0">{user && user.name}</li>
 				</ul>
 			</div>
 		</nav>
