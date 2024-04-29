@@ -43,14 +43,17 @@ function SignUp() {
 			warningMessage('Please fill all the fields');
 		} else {
 			setWarningMessage('');
-			callRequest(request);
+			const response = callRequest(request);
+			// console.log(response);
+			if (response) {
+				dispatch(login(response));
+				navigate('/');
+			}
 		}
 	};
 
 	const request = async () => {
 		await authService.createAccount(email, password, name);
-		dispatch(login(user));
-		navigate('/');
 	};
 
 	if (loading) {

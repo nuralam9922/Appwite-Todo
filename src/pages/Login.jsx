@@ -28,22 +28,29 @@ function Login() {
 		}
 	}, [user, navigate]);
 
+
+
 	const handleLogin = async (e) => {
 		e.preventDefault();
 
 		if (password.length <= 8) {
-			setWarningMessage('password must be at least 8 characters');
-		} else if (email.length > 0 && password.length > 0) {
-			callRequest(request);
+			setWarningMessage('Password must be at least 8 characters');
+		} else if (email.length === 0 || password.length === 0) {
+			warningMessage('Please fill all the fields');
 		} else {
-			setWarningMessage('please fill The  fields ');
+			setWarningMessage('');
+			const response = await callRequest(request);
+			if (response) {
+				dispatch(login(response));
+				navigate('/');
+			}
 		}
 	};
 
+	// console.log(user);
+
 	const request = async () => {
-		const loggedInUser = await authService.login(email, password);
-		dispatch(login(loggedInUser));
-		navigate('/');
+		await authService.login(email, password);
 	};
 
 	if (loading) {
@@ -103,6 +110,14 @@ function Login() {
 					<p className="hover:underline underline-offset-4 cursor-pointer">
 						<Link to="/sign-up">Sign Up</Link>
 					</p>
+					<p onClick={async () => await authService.logOut()} className="hover:underline underline-offset-4 cursor-pointer">
+						{/* <Link to="/forgot-password">Forgot Password</Link>
+						log */}
+						logout
+					</p>
+					<a href="/">
+						<p>home</p>
+					</a>
 				</form>
 			</div>
 		</div>

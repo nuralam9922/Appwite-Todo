@@ -21,9 +21,9 @@ const useAuth = () => {
 			}
 
 			setAuthStatus(false);
-			// setLoading(false);
+			setLoading(false);
 		})();
-		setLoading(false);
+		// setLoading(false);
 	}, []);
 
 	return [authStatus, loading];

@@ -27,32 +27,26 @@ const Navbar = () => {
 	};
 
 	return (
-		<nav className="bg-gray-800 text-white py-4 px-5">
+		<nav className="bg-gray-800 text-white py-4 px-5 font poppins-regular">
 			<div className="container mx-auto flex flex-wrap justify-between items-center">
 				<div className="flex items-center">
-					<h1 className="text-lg font-bold mr-4">My Website</h1>
+					<h1 className="text-lg font-bold mr-4">Todo App</h1>
 				</div>
-				<ul className="flex flex-wrap">
+				<ul className="flex flex-wrap items-center justify-center">
 					<li className="mr-4 mb-2 md:mb-0">
-						<a href="/" className="hover:underline">
+						<Link to="/" className="hover:underline">
 							Home
-						</a>
-					</li>
-					{user ? (
-						<li className="mr-4 mb-2 md:mb-0">
-							<button className={`${requestLoading ? 'cursor-none' : 'cursor-pointer'}`} onClick={handleLogout}>
-								Logout
-							</button>
-						</li>
-					) : (
-						<Link to={'/login'}>
-							<li className="mr-4 mb-2 md:mb-0">
-								<button>Login</button>
-							</li>
 						</Link>
-					)}
+					</li>
 
-					<li className=" mb-2 md:mb-0">{user && user.name}</li>
+					<li onClick={handleLogout} className="mr-4 mb-2 md:mb-0">
+						logout
+					</li>
+					<Link to={'/profile'}>
+						<li className="mr-4 mb-2 md:mb-0 size-10 bg-slate-500 rounded-full">
+							<img className="w-10 h-10 rounded-full" src={user?.profileUrl || 'https://via.placeholder.com/150'} alt="" />
+						</li>
+					</Link>
 				</ul>
 			</div>
 		</nav>
