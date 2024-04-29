@@ -5,16 +5,23 @@ import authService from '../services/auth.service';
 import { useDispatch } from 'react-redux';
 import { logout } from '../features/userSlice';
 import { useNavigate } from 'react-router-dom';
+import useRequest from '../hooks/useRequest';
 
 const Navbar = () => {
 	const { user } = useSelector((states) => states.user);
 	const dispatch = useDispatch();
+	const [requestLoading, requestError, callRequest] = useRequest();
+
+	const navigate = useNavigate();
+
 	const handleLogin = () => {};
 
-	const navigate = useNavigate('/');
-	
 	const handleLogout = async () => {
-		const response = await authService.logOut();
+		callRequest(request);
+	};
+
+	const request = async () => {
+		await authService.logOut();
 		dispatch(logout());
 		navigate('/login');
 	};
@@ -33,7 +40,9 @@ const Navbar = () => {
 					</li>
 					{user ? (
 						<li className="mr-4 mb-2 md:mb-0">
-							<button onClick={handleLogout}>Logout</button>
+							<button className={`${requestLoading ? 'cursor-none' : 'cursor-pointer'}`} onClick={handleLogout}>
+								Logout
+							</button>
 						</li>
 					) : (
 						<Link to={'/login'}>

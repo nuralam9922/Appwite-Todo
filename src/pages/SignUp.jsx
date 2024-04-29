@@ -6,39 +6,60 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import useAuth from '../hooks/useAuth';
+import useRequest from '../hooks/useRequest';
 
 function SignUp() {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-	const [loading, setLoading] = useState(false);
 
 	const [name, setName] = useState('');
 	const [error, setError] = useState(null);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { user } = useSelector((states) => states.user);
+	const [authStatus, loading] = useAuth();
+	const [requestLoading, requestError, callRequest] = useRequest();
+	const [warningMessage, setWarningMessage] = useState(null);
 
-	const handleSignUp = async (e) => {
-		e.preventDefault();
-
-		try {
-			const user = await authService.createAccount({ email, password, name });
-			// console.log(user);
-			dispatch(login(user));
-			setLoading(false);
-
-			// Redirect to dashboard or perform other actions upon successful signup
-		} catch (error) {
-			setError('Failed to create an account. Please try again.'); // Set error message
-		}
-	};
+	if (authStatus) {
+		navigate('/');
+	}
 
 	useEffect(() => {
-		console.log(user);
 		if (user !== null) {
 			navigate('/');
 		}
 	}, [user]);
+
+	const handleSignUp = async (e) => {
+		e.preventDefault();
+
+		if (password.length <= 8) {
+			setWarningMessage('Password must be at least 8 characters');
+		} else if (name === '') {
+			warningMessage('Please enter your name');
+		} else if (email.length === 0 || password.length === 0) {
+			warningMessage('Please fill all the fields');
+		} else {
+			setWarningMessage('');
+			callRequest(request);
+		}
+	};
+
+	const request = async () => {
+		await authService.createAccount(email, password, name);
+		dispatch(login(user));
+		navigate('/');
+	};
+
+	if (loading) {
+		return (
+			<div className="flex justify-center items-center h-screen">
+				<div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-gray-900"></div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -86,14 +107,15 @@ function SignUp() {
 							className="mt-1 p-2 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
 						/>
 					</div>
-					{error && <p className="mt-2 text-sm text-red-600">{error}</p>} {/* Display error message */}
+					{warningMessage && <p className="mt-2 text-sm text-red-600">{warningMessage}</p>} {/* Display error message */}
+					{requestError && <p className="mt-2 text-sm text-red-600">{requestError}</p>} {/* Display error message */}
 					<div>
 						<button
-						disabled={loading}
+							disabled={loading}
 							type="submit"
 							className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
 						>
-							Sign up
+							{requestLoading ? 'SignUp in...' : 'SignUp in'}
 						</button>
 					</div>
 					<p className="hover:underline underline-offset-4 cursor-pointer">

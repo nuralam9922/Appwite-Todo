@@ -4,16 +4,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../features/userSlice';
 import authService from '../services/auth.service';
 import useAuth from '../hooks/useAuth';
+import useRequest from '../hooks/useRequest';
 
 function Login() {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-	const [error, setError] = useState(null);
-	const [requestLoading, setRequestLoading] = useState(false);
+	// const [error, setError] = useState(null);
+
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const { user } = useSelector((state) => state.user);
 	const [authStatus, loading] = useAuth();
+	const [requestLoading, requestError, callRequest] = useRequest();
+	const [warningMessage, setWarningMessage] = useState(null);
 
 	if (authStatus) {
 		navigate('/');
@@ -27,17 +30,20 @@ function Login() {
 
 	const handleLogin = async (e) => {
 		e.preventDefault();
-		setError(null);
-		setRequestLoading(true);
-		try {
-			const loggedInUser = await authService.login({ email, password });
-			dispatch(login(loggedInUser));
-			navigate('/');
-		} catch (error) {
-			setError(error.message);
-		} finally {
-			setRequestLoading(false);
+
+		if (password.length <= 8) {
+			setWarningMessage('password must be at least 8 characters');
+		} else if (email.length > 0 && password.length > 0) {
+			callRequest(request);
+		} else {
+			setWarningMessage('please fill The  fields ');
 		}
+	};
+
+	const request = async () => {
+		const loggedInUser = await authService.login(email, password);
+		dispatch(login(loggedInUser));
+		navigate('/');
 	};
 
 	if (loading) {
@@ -83,7 +89,8 @@ function Login() {
 							className="mt-1 p-2 block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
 						/>
 					</div>
-					{error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+					{requestError && <p className="mt-2 text-sm text-red-600">{requestError}</p>}
+					{warningMessage && <p className="mt-2 text-sm text-red-600">{warningMessage}</p>}
 					<div>
 						<button
 							type="submit"
