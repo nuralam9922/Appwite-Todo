@@ -1,4 +1,4 @@
-import { Client, Account, ID } from 'appwrite';
+import { Client, Account, ID, Role } from 'appwrite';
 import { APPWRITE_ENDPOINT, PROJECT_ID } from '../config/config';
 
 class AuthService {
@@ -11,8 +11,9 @@ class AuthService {
 	async createAccount(email, password, name) {
 		try {
 			const userAccount = await this.account.create(ID.unique(), email, password, name);
+			// console.log('userAccount', userAccount);
 			if (userAccount) {
-				return await this.login( email, password );
+				return await this.login(email, password);
 			}
 			// return userAccount;
 		} catch (error) {
@@ -21,11 +22,12 @@ class AuthService {
 		}
 	}
 
-	async login( email, password ) {
+	async login(email, password) {
 		console.log(email, password);
 		try {
-			const userSession = await this.account.createEmailPasswordSession(email, password);
-			return userSession;
+			const loggedInUser = await this.account.createEmailPasswordSession(email, password);
+			localStorage.setItem('loggedInUserId', loggedInUser.$id);
+			return loggedInUser;
 		} catch (error) {
 			console.log('Error logging in:', error);
 			throw error;
@@ -33,13 +35,22 @@ class AuthService {
 	}
 
 	async getCurrentUser() {
-		return await this.account.get();
+		try {
+			if (localStorage.getItem('loggedInUserId')) {
+				return await this.account.get();
+			}
+		} catch (error) {
+			console.log('Error getting current user:', error);
+			throw error;
+		}
 	}
 
 	async logOut() {
+		localStorage.setItem('loggedInUserId', '');
+
 		try {
-			// Regardless of the current user state, attempt to log out
-			return await this.account.deleteSessions();
+			await this.account.deleteSessions();
+			return false; // User was not logged in
 		} catch (error) {
 			console.error('Error logging out:', error);
 			// Handle specific errors or update UI based on logout outcome (optional)

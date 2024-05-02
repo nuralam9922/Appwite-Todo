@@ -2,11 +2,12 @@ import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import AuthWrapper from '../AuthWrapper';
 import NotFoundPage from '../pages//NotFoundPage';
+import { Login, SignUp, Tasks } from '../pages';
 // Dynamically import pages
 const Todo = React.lazy(() => import('../pages/Todo'));
 const Profile = React.lazy(() => import('../pages/Profile'));
-const Login = React.lazy(() => import('../pages/Login'));
-const SignUp = React.lazy(() => import('../pages/SignUp'));
+// const Login = React.lazy(() => import('../pages/Login'));
+// const SignUp = React.lazy(() => import('../pages/SignUp'));
 // const NotFoundPage = React.lazy(() => import('../pages/NotFoundPage'));
 
 
@@ -23,6 +24,10 @@ const routes = createBrowserRouter([
 			{
 				path: '/profile',
 				element: React.createElement(Profile),
+			},
+			{
+				path: '/tasks',
+				element: React.createElement(Tasks),
 			},
 		],
 	},

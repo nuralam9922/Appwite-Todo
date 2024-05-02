@@ -10,6 +10,9 @@ const useAuth = () => {
 	const [authStatus, setAuthStatus] = useState(false);
 	const [loading, setLoading] = useState(true);
 
+
+	
+
 	useEffect(() => {
 		(async () => {
 			const user = await authService.getCurrentUser();

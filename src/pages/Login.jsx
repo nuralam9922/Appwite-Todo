@@ -28,8 +28,6 @@ function Login() {
 		}
 	}, [user, navigate]);
 
-
-
 	const handleLogin = async (e) => {
 		e.preventDefault();
 
@@ -40,7 +38,8 @@ function Login() {
 		} else {
 			setWarningMessage('');
 			const response = await callRequest(request);
-			if (response) {
+			console.log(response);
+			if (response.$id) {
 				dispatch(login(response));
 				navigate('/');
 			}
@@ -50,7 +49,7 @@ function Login() {
 	// console.log(user);
 
 	const request = async () => {
-		await authService.login(email, password);
+		return await authService.login(email, password);
 	};
 
 	if (loading) {
@@ -110,14 +109,6 @@ function Login() {
 					<p className="hover:underline underline-offset-4 cursor-pointer">
 						<Link to="/sign-up">Sign Up</Link>
 					</p>
-					<p onClick={async () => await authService.logOut()} className="hover:underline underline-offset-4 cursor-pointer">
-						{/* <Link to="/forgot-password">Forgot Password</Link>
-						log */}
-						logout
-					</p>
-					<a href="/">
-						<p>home</p>
-					</a>
 				</form>
 			</div>
 		</div>
